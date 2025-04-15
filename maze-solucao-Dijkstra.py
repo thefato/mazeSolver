@@ -51,42 +51,42 @@ class Maze:
                 self.carve_path(new_row, new_col, maze)
 
 
-class DijkstraSolver:
-    def __init__(self, maze):
+class DijkstraSolver: #pathfinder usando o algoritmo de Dijkstra
+    def __init__(self, maze): # Inicializa o caminho
         self.maze = maze
         self.height = len(maze)
         self.width = len(maze[0])
 
-    def solve(self, entry, exit):
-        distance = [[float('inf')] * self.width for _ in range(self.height)]
-        distance[entry[0]][entry[1]] = 0
+    def solve(self, entry, exit): # Encontra o caminho entre a entrada e a saída
+        distance = [[float('inf')] * self.width for _ in range(self.height)] # Inicializa a distância de cada célula como infinito
+        distance[entry[0]][entry[1]] = 0 # A distância da entrada para ela mesma é 0
 
-        queue = [(0, entry)]
-        previous = [[None] * self.width for _ in range(self.height)]
+        queue = [(0, entry)] # Fila de prioridade para armazenar as células a serem exploradas, ordenadas pela distância
+        previous = [[None] * self.width for _ in range(self.height)] # Armazena o caminho percorrido
 
-        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)]
+        directions = [(0, 1), (1, 0), (0, -1), (-1, 0)] # Direções possíveis (cima, baixo, esquerda, direita)
 
-        while queue:
-            current_distance, (row, col) = heapq.heappop(queue)
+        while queue: # Enquanto houver células a serem exploradas
+            current_distance, (row, col) = heapq.heappop(queue) # Remove a célula com a menor distância da fila
 
-            if (row, col) == exit:
-                path = []
-                while (row, col) != entry:
-                    path.append((row, col))
-                    row, col = previous[row][col]
-                path.append(entry)
-                path.reverse()
-                return path, distance, previous
+            if (row, col) == exit: # Se a célula atual for a saída, constrói o caminho
+                path = [] 
+                while (row, col) != entry: # Constrói o caminho percorrido
+                    path.append((row, col)) 
+                    row, col = previous[row][col] # Move para a célula anterior
+                path.append(entry) # Adiciona a entrada ao caminho
+                path.reverse() # Inverte o caminho para que fique na ordem correta
+                return path, distance, previous # Retorna o caminho, a distância e o caminho percorrido
 
-            for dr, dc in directions:
-                new_row, new_col = row + dr, col + dc
-                if 0 <= new_row < self.height and 0 <= new_col < self.width:
-                    if self.maze[new_row][new_col] == 0:  # Can move
-                        new_distance = current_distance + 1
-                        if new_distance < distance[new_row][new_col]:
-                            distance[new_row][new_col] = new_distance
-                            previous[new_row][new_col] = (row, col)
-                            heapq.heappush(queue, (new_distance, (new_row, new_col)))
+            for dr, dc in directions: 
+                new_row, new_col = row + dr, col + dc # Calcula a nova posição
+                if 0 <= new_row < self.height and 0 <= new_col < self.width: # Verifica se a nova posição está dentro dos limites
+                    if self.maze[new_row][new_col] == 0:  # Se a nova posição for um caminho (0)
+                        new_distance = current_distance + 1 # Aumenta a distância em 1
+                        if new_distance < distance[new_row][new_col]: # Se a nova distância for menor que a distância atual
+                            distance[new_row][new_col] = new_distance # Atualiza a distância
+                            previous[new_row][new_col] = (row, col) # Atualiza a célula anterior
+                            heapq.heappush(queue, (new_distance, (new_row, new_col))) # Adiciona a nova célula à fila
 
         return [], distance, previous
 

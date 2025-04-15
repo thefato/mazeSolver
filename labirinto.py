@@ -68,34 +68,11 @@ def desenhar_labirinto(tela, labirinto, inicio, fim, caminho=None, sem_solucao=F
         texto_rect = texto.get_rect(center=(LARGURA // 2, ALTURA // 2))
         tela.blit(texto, texto_rect)
 
-def busca_forca_bruta(labirinto, inicio, fim, caminho_atual=None, visitados=None):
-    if caminho_atual is None:
-        caminho_atual = [inicio]
-    if visitados is None:
-        visitados = {inicio}
-
-    if inicio == fim:
-        return caminho_atual
-
-    linha, coluna = inicio
-    movimentos = [(0, 1), (1, 0), (0, -1), (-1, 0)]
-
-    for dl, dc in movimentos:
-        nova_linha, nova_coluna = linha + dl, coluna + dc
-        if 0 <= nova_linha < len(labirinto) and 0 <= nova_coluna < len(labirinto[0]) and \
-           labirinto[nova_linha][nova_coluna] == 0 and (nova_linha, nova_coluna) not in visitados:
-            novo_ponto = (nova_linha, nova_coluna)
-            novo_caminho = caminho_atual + [novo_ponto]
-            novos_visitados = visitados.union({novo_ponto})
-            resultado = busca_forca_bruta(labirinto, novo_ponto, fim, novo_caminho, novos_visitados)
-            if resultado:
-                return resultado
-    return None
 
 def main():
     pygame.init()
     tela = pygame.display.set_mode((LARGURA, ALTURA))
-    pygame.display.set_caption("Labirinto 20x20 - Força Bruta")
+    pygame.display.set_caption("Labirinto 20x20")
     clock = pygame.time.Clock()
     pygame.font.init()
 
@@ -115,13 +92,7 @@ def main():
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 rodando = False
-            if evento.type == pygame.KEYDOWN:
-                if evento.key == pygame.K_SPACE and caminho_solucao is None and not sem_solucao_flag:
-                    print("Buscando solução por força bruta...")
-                    caminho_solucao = busca_forca_bruta(labirinto, inicio, fim)
-                    if caminho_solucao is None:
-                        print("Nenhuma solução encontrada.")
-                        sem_solucao_flag = True
+            
 
         tela.fill(COR_CAMINHO)
         desenhar_labirinto(tela, labirinto, inicio, fim, caminho_solucao, sem_solucao_flag)
